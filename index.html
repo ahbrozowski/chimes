@@ -37,6 +37,25 @@
             <span>Sensitivity</span>
             <input id="sensitivityControl" type="range" min="0" max="1" value="0.64" step="0.01">
           </label>
+          <label class="range-field" for="sustainControl">
+            <span>Sustain</span>
+            <input id="sustainControl" type="range" min="10" max="20" value="15" step="0.5">
+          </label>
+          <label class="toggle-field" for="breezeToggle">
+            <span>Breeze</span>
+            <input id="breezeToggle" type="checkbox" class="toggle-input">
+            <span class="toggle-visual" aria-hidden="true"></span>
+          </label>
+          <label class="select-field" for="keyControl">
+            <span>Key</span>
+            <select id="keyControl" class="select-input">
+              <option value="pentatonic">Pentatonic</option>
+              <option value="amazingGrace">Amazing Grace</option>
+              <option value="minorPent">Minor</option>
+              <option value="zenGarden">Zen Garden</option>
+              <option value="original">Original</option>
+            </select>
+          </label>
         </div>
 
         <div class="motion-meter" aria-hidden="true">
