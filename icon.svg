@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title>Chimes app icon</title>
+  <defs>
+    <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#dff5f3"/>
+      <stop offset="0.62" stop-color="#f8fbfb"/>
+      <stop offset="1" stop-color="#ffd9c7"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#819098"/>
+      <stop offset="0.38" stop-color="#ffffff"/>
+      <stop offset="0.62" stop-color="#b5c3c8"/>
+      <stop offset="1" stop-color="#637982"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="108" fill="url(#sky)"/>
+  <path d="M100 128c84-32 220 20 312-16" fill="none" stroke="#42615e" stroke-width="24" stroke-linecap="round"/>
+  <g stroke="#4d5f62" stroke-width="8" stroke-linecap="round">
+    <path d="M160 128v64"/>
+    <path d="M218 132v64"/>
+    <path d="M276 132v64"/>
+    <path d="M334 126v64"/>
+  </g>
+  <g fill="url(#metal)">
+    <rect x="138" y="188" width="44" height="186" rx="22"/>
+    <rect x="197" y="194" width="42" height="232" rx="21"/>
+    <rect x="255" y="190" width="44" height="204" rx="22"/>
+    <rect x="314" y="186" width="42" height="248" rx="21"/>
+  </g>
+  <path d="M256 126v182" fill="none" stroke="#4d5f62" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="256" cy="322" r="34" fill="#d97962"/>
+  <path d="M256 356c-18 46-18 46 0 92 18-46 18-46 0-92z" fill="#3f8f8d"/>
+  <circle cx="366" cy="160" r="14" fill="#dca94a"/>
+  <circle cx="118" cy="308" r="10" fill="#dca94a"/>
+</svg>

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#6aa8a6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Chimes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Chimes</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <canvas id="scene" aria-label="Wind chimes hanging in a soft breeze"></canvas>
+
+      <section class="control-dock" aria-label="Wind chime controls">
+        <div class="title-block">
+          <p class="kicker">Pocket wind chimes</p>
+          <h1>Chimes</h1>
+          <p id="statusText" class="status">Tap wake, then move gently.</p>
+        </div>
+
+        <div class="actions">
+          <button id="startButton" class="button primary" type="button">Wake</button>
+          <button id="testButton" class="button" type="button">Test</button>
+        </div>
+
+        <div class="controls">
+          <label class="range-field" for="volumeControl">
+            <span>Volume</span>
+            <input id="volumeControl" type="range" min="0" max="1" value="0.76" step="0.01">
+          </label>
+          <label class="range-field" for="sensitivityControl">
+            <span>Sensitivity</span>
+            <input id="sensitivityControl" type="range" min="0" max="1" value="0.64" step="0.01">
+          </label>
+        </div>
+
+        <div class="motion-meter" aria-hidden="true">
+          <span id="motionMeter"></span>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

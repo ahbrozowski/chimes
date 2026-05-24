@@ -1,0 +1,19 @@
+{
+  "name": "Pocket Wind Chimes",
+  "short_name": "Chimes",
+  "description": "A tiny shake-to-chime web app for iPhone.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eaf7f6",
+  "theme_color": "#6aa8a6",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
