@@ -300,6 +300,21 @@ function tryResumeAudio() {
   }
 }
 
+function checkAudioWoken() {
+  if (!state.started) return;
+  const ac = state.audioContext;
+  const running = ac && ac.state === "running";
+  if (!running) {
+    startButton.disabled = false;
+    startButton.textContent = "Wake";
+    updateStatus("Tap to resume.");
+  } else {
+    startButton.disabled = true;
+    startButton.textContent = "Awake";
+    if (statusText.textContent === "Tap to resume.") updateStatus("Ready.");
+  }
+}
+
 function createPanner(pan) {
   const audioContext = state.audioContext;
   if (audioContext.createStereoPanner) {
@@ -1279,11 +1294,24 @@ testButton.addEventListener("click", async () => {
 window.addEventListener("resize", resizeCanvas);
 
 document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible") tryResumeAudio();
+  if (document.visibilityState === "visible") {
+    tryResumeAudio();
+    setTimeout(checkAudioWoken, 250);
+  }
 });
-window.addEventListener("pageshow", tryResumeAudio);
-window.addEventListener("focus", tryResumeAudio);
-window.addEventListener("pointerdown", tryResumeAudio, { passive: true });
+window.addEventListener("pageshow", () => {
+  tryResumeAudio();
+  setTimeout(checkAudioWoken, 250);
+});
+window.addEventListener("focus", () => {
+  tryResumeAudio();
+  setTimeout(checkAudioWoken, 250);
+});
+window.addEventListener("pointerdown", () => {
+  tryResumeAudio();
+  setTimeout(checkAudioWoken, 100);
+}, { passive: true });
+window.addEventListener("touchstart", tryResumeAudio, { passive: true });
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.getRegistrations().then((regs) => {
