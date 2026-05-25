@@ -5,7 +5,6 @@ const testButton = document.querySelector("#testButton");
 const statusText = document.querySelector("#statusText");
 const volumeControl = document.querySelector("#volumeControl");
 const sensitivityControl = document.querySelector("#sensitivityControl");
-const sustainControl = document.querySelector("#sustainControl");
 const breezeToggle = document.querySelector("#breezeToggle");
 const keyControl = document.querySelector("#keyControl");
 const motionMeter = document.querySelector("#motionMeter");
@@ -164,9 +163,8 @@ function applyPersistedSettings() {
   const k = readKey("pentatonic");
   volumeControl.value = String(v);
   sensitivityControl.value = String(s);
-  sustainControl.value = String(su);
-  breezeToggle.checked = br;
   if (keyControl) keyControl.value = k;
+  if (breezeToggle) breezeToggle.setAttribute("aria-pressed", String(br));
   state.volume = v;
   state.sensitivity = s;
   state.sustain = su;
@@ -558,6 +556,15 @@ function physicsStep(dt, nowMs) {
   const motionFz = state.motionAz * sens * PHY.motionForceScale;
   applyForce(pendulum, motionFx, 0, motionFz, dt);
 
+  const disp = Math.hypot(pendulum.x, pendulum.z);
+  const motionMag = Math.hypot(state.motionAx, state.motionAz);
+  if (disp > 6 && motionMag > 0.4) {
+    const tx = -pendulum.z / disp;
+    const tz = pendulum.x / disp;
+    const tBoost = sens * Math.min(1, motionMag / 6) * PHY.motionForceScale * 0.45;
+    applyForce(pendulum, tx * tBoost, 0, tz * tBoost, dt);
+  }
+
   const tSec = nowMs / 1000;
   const idleFx = noise1(tSec * 0.31, 1.3) * PHY.idleSwayForce;
   const idleFz = noise1(tSec * 0.37, 2.7) * PHY.idleSwayForce;
@@ -600,9 +607,10 @@ function physicsStep(dt, nowMs) {
 function handleMotion(event) {
   const ag = event.accelerationIncludingGravity;
   const acc = event.acceleration;
-  let ax, az;
+  let ax, ay, az;
   if (acc && (acc.x !== null || acc.y !== null || acc.z !== null)) {
     ax = safeNumber(acc.x);
+    ay = safeNumber(acc.y);
     az = safeNumber(acc.z);
   } else if (ag) {
     const rawX = safeNumber(ag.x);
@@ -615,6 +623,7 @@ function handleMotion(event) {
       state.motionBaseInit = true;
     }
     ax = rawX - state.motionBaseX;
+    ay = rawY - state.motionBaseY;
     az = rawZ - state.motionBaseZ;
     state.motionBaseX += (rawX - state.motionBaseX) * 0.04;
     state.motionBaseY += (rawY - state.motionBaseY) * 0.04;
@@ -623,8 +632,10 @@ function handleMotion(event) {
     return;
   }
 
+  const azBlend = az + ay * 0.75;
+
   state.motionAx = state.motionAx * 0.62 + ax * 0.38;
-  state.motionAz = state.motionAz * 0.62 + az * 0.38;
+  state.motionAz = state.motionAz * 0.62 + azBlend * 0.38;
 
   const mag = Math.min(1, Math.hypot(state.motionAx, state.motionAz) / 10);
   if (mag > state.motionEnergy) state.motionEnergy = mag;
@@ -686,7 +697,7 @@ function getLayout() {
   const w = state.width;
   const h = state.height;
   const cx = w * 0.5;
-  const cyTop = Math.max(96, Math.min(160, h * 0.2));
+  const cyTop = Math.max(72, Math.min(140, h * 0.15));
   const foreshorten = 0.32;
   const ringRyScreen = PHY.ringR * foreshorten;
   const sizeScale = Math.max(0.78, Math.min(1, h / 760));
@@ -799,24 +810,15 @@ function drawBackground(ctx, w, h) {
   ctx.fillRect(0, h * 0.68, w, h * 0.32);
 }
 
-function drawCord(ctx, layout, time) {
+function drawCord(ctx, layout) {
   const { cx, cyTop } = layout;
-  const t = time / 1000;
-  const swayX = Math.sin(t * 0.6) * 3;
   ctx.save();
-  ctx.strokeStyle = "rgba(72, 87, 86, 0.62)";
+  ctx.strokeStyle = "rgba(63, 74, 76, 0.85)";
   ctx.lineCap = "round";
-  ctx.lineWidth = 4;
+  ctx.lineWidth = 4.5;
   ctx.beginPath();
-  ctx.moveTo(cx + swayX * 1.4, -16);
-  ctx.bezierCurveTo(
-    cx + swayX * 0.6,
-    cyTop * 0.35,
-    cx + swayX * 0.2,
-    cyTop * 0.7,
-    cx,
-    cyTop - 6
-  );
+  ctx.moveTo(cx, -20);
+  ctx.lineTo(cx, cyTop);
   ctx.stroke();
   ctx.restore();
 }
@@ -827,10 +829,8 @@ function drawTopRing(ctx, layout) {
   const ringThickness = 22;
   const ringHeight = 10;
   const outerR = ringR + ringThickness * 0.5;
-  const innerR = ringR - ringThickness * 0.5;
   const fs = layout.foreshorten;
   const outerRy = outerR * fs;
-  const innerRy = innerR * fs;
   const cyBot = cyTop + ringHeight;
 
   ctx.save();
@@ -838,19 +838,6 @@ function drawTopRing(ctx, layout) {
   ctx.shadowBlur = 14;
   ctx.shadowOffsetX = 3;
   ctx.shadowOffsetY = 8;
-
-  const innerSideGrad = ctx.createLinearGradient(cx - innerR, cyTop, cx + innerR, cyTop);
-  innerSideGrad.addColorStop(0, "#26160c");
-  innerSideGrad.addColorStop(0.5, "#5c3c22");
-  innerSideGrad.addColorStop(1, "#26160c");
-  ctx.fillStyle = innerSideGrad;
-  ctx.beginPath();
-  ctx.moveTo(cx + innerR, cyTop);
-  ctx.ellipse(cx, cyTop, innerR, innerRy, 0, 0, Math.PI, true);
-  ctx.lineTo(cx - innerR, cyBot);
-  ctx.ellipse(cx, cyBot, innerR, innerRy, 0, Math.PI, 0, false);
-  ctx.closePath();
-  ctx.fill();
 
   const outerSideGrad = ctx.createLinearGradient(cx - outerR, cyTop, cx + outerR, cyTop);
   outerSideGrad.addColorStop(0, "#3a2515");
@@ -882,15 +869,42 @@ function drawTopRing(ctx, layout) {
   ctx.fillStyle = topGrad;
   ctx.beginPath();
   ctx.ellipse(cx, cyTop, outerR, outerRy, 0, 0, Math.PI * 2);
-  ctx.ellipse(cx, cyTop, innerR, innerRy, 0, 0, Math.PI * 2);
-  ctx.fill("evenodd");
+  ctx.fill();
   ctx.restore();
 
-  ctx.strokeStyle = "rgba(48, 32, 20, 0.6)";
-  ctx.lineWidth = 1.2;
-  ctx.beginPath();
-  ctx.ellipse(cx, cyTop + 0.5, innerR, innerRy, 0, 0, Math.PI * 2);
-  ctx.stroke();
+  ctx.save();
+  ctx.strokeStyle = "rgba(58, 38, 22, 0.22)";
+  ctx.lineWidth = 0.7;
+  const rings = [0.86, 0.7, 0.55, 0.4, 0.22];
+  for (const r of rings) {
+    ctx.beginPath();
+    ctx.ellipse(
+      cx + (1 - r) * 1.5,
+      cyTop + (1 - r) * 0.8,
+      outerR * r,
+      outerRy * r,
+      0,
+      0,
+      Math.PI * 2
+    );
+    ctx.stroke();
+  }
+  ctx.strokeStyle = "rgba(245, 215, 175, 0.18)";
+  ctx.lineWidth = 0.6;
+  for (const r of [0.78, 0.62, 0.46, 0.3]) {
+    ctx.beginPath();
+    ctx.ellipse(
+      cx + (1 - r) * 1.5 - 0.6,
+      cyTop + (1 - r) * 0.8 - 0.4,
+      outerR * r,
+      outerRy * r,
+      0,
+      0,
+      Math.PI * 2
+    );
+    ctx.stroke();
+  }
+  ctx.restore();
 
   ctx.strokeStyle = "rgba(255, 232, 200, 0.45)";
   ctx.lineWidth = 0.9;
@@ -1167,7 +1181,6 @@ function render(time) {
   const layout = getLayout();
 
   drawBackground(ctx, w, h);
-  drawCord(ctx, layout, time);
 
   const drawList = rods.slice();
   drawList.push(pendulum);
@@ -1179,6 +1192,7 @@ function render(time) {
   }
 
   drawTopRing(ctx, layout);
+  drawCord(ctx, layout);
 
   for (let i = 0; i < rods.length; i += 1) {
     rods[i].glow *= 0.91;
@@ -1229,13 +1243,9 @@ sensitivityControl.addEventListener("input", () => {
   writeStorage(STORAGE.sensitivity, state.sensitivity);
 });
 
-sustainControl.addEventListener("input", () => {
-  state.sustain = Number(sustainControl.value);
-  writeStorage(STORAGE.sustain, state.sustain);
-});
-
-breezeToggle.addEventListener("change", () => {
-  state.breeze = breezeToggle.checked;
+breezeToggle.addEventListener("click", () => {
+  state.breeze = !state.breeze;
+  breezeToggle.setAttribute("aria-pressed", String(state.breeze));
   writeStorage(STORAGE.breeze, state.breeze);
 });
 

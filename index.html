@@ -16,6 +16,14 @@
     <main class="app-shell">
       <canvas id="scene" aria-label="Wind chimes hanging in a soft breeze"></canvas>
 
+      <button id="breezeToggle" class="breeze-btn" type="button" aria-pressed="false" aria-label="Toggle breeze">
+        <svg class="breeze-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/>
+          <path d="M9.6 4.6A2 2 0 1 1 11 8H2"/>
+          <path d="M12.6 19.4A2 2 0 1 0 14 16H2"/>
+        </svg>
+      </button>
+
       <section class="control-dock" aria-label="Wind chime controls">
         <div class="title-block">
           <p class="kicker">Pocket wind chimes</p>
@@ -36,15 +44,6 @@
           <label class="range-field" for="sensitivityControl">
             <span>Sensitivity</span>
             <input id="sensitivityControl" type="range" min="0" max="1" value="0.64" step="0.01">
-          </label>
-          <label class="range-field" for="sustainControl">
-            <span>Sustain</span>
-            <input id="sustainControl" type="range" min="10" max="20" value="15" step="0.5">
-          </label>
-          <label class="toggle-field" for="breezeToggle">
-            <span>Breeze</span>
-            <input id="breezeToggle" type="checkbox" class="toggle-input">
-            <span class="toggle-visual" aria-hidden="true"></span>
           </label>
           <label class="select-field" for="keyControl">
             <span>Key</span>

@@ -141,8 +141,53 @@ input:focus-visible {
 .controls {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px 14px;
+}
+
+.breeze-btn {
+  position: absolute;
+  top: max(12px, env(safe-area-inset-top));
+  right: max(12px, env(safe-area-inset-right));
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--ink);
+  background: var(--panel);
+  box-shadow: 0 6px 16px rgba(18, 34, 42, 0.12);
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.breeze-btn:active {
+  transform: translateY(1px);
+}
+
+.breeze-btn:focus-visible {
+  outline: 3px solid rgba(63, 143, 141, 0.35);
+  outline-offset: 2px;
+}
+
+.breeze-btn[aria-pressed="true"] {
+  background: linear-gradient(135deg, var(--teal-dark), var(--teal));
+  color: #fff;
+  border-color: transparent;
+}
+
+.breeze-icon {
+  display: block;
+  width: 20px;
+  height: 20px;
 }
 
 .select-field {
@@ -276,12 +321,6 @@ input:focus-visible {
   transition: width 120ms ease;
 }
 
-@media (max-width: 900px) {
-  .controls {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
 @media (max-width: 620px) {
   .controls {
     grid-template-columns: 1fr 1fr;
@@ -291,19 +330,61 @@ input:focus-visible {
 @media (max-width: 620px) {
   .control-dock {
     grid-template-columns: 1fr;
-    padding: 14px;
+    padding: 10px 12px;
+    gap: 10px 12px;
+    bottom: max(10px, env(safe-area-inset-bottom));
+    width: min(760px, calc(100% - 20px));
+  }
+
+  .title-block {
+    display: none;
+  }
+
+  .controls {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 10px;
   }
 
   .actions {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 8px;
   }
 
   .button {
     width: 100%;
+    min-height: 40px;
+    padding: 0 14px;
+    font-size: 0.92rem;
   }
 
-  h1 {
-    font-size: 2rem;
+  .range-field {
+    gap: 5px;
+    font-size: 0.78rem;
+  }
+
+  .select-input {
+    min-height: 28px;
+    font-size: 0.8rem;
+    padding: 2px 6px;
+  }
+
+  .toggle-field {
+    padding-top: 18px;
+    font-size: 0.78rem;
+  }
+
+  .toggle-visual {
+    width: 36px;
+    height: 20px;
+  }
+
+  .toggle-visual::after {
+    width: 16px;
+    height: 16px;
+  }
+
+  .toggle-input:checked ~ .toggle-visual::after {
+    transform: translateX(16px);
   }
 }
 
