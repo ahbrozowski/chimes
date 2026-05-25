@@ -293,6 +293,13 @@ async function resumeAudio() {
   return audioContext.state === "running";
 }
 
+function tryResumeAudio() {
+  const ac = state.audioContext;
+  if (ac && ac.state === "suspended") {
+    ac.resume().catch(() => {});
+  }
+}
+
 function createPanner(pan) {
   const audioContext = state.audioContext;
   if (audioContext.createStereoPanner) {
@@ -605,6 +612,7 @@ function physicsStep(dt, nowMs) {
 }
 
 function handleMotion(event) {
+  tryResumeAudio();
   const ag = event.accelerationIncludingGravity;
   const acc = event.acceleration;
   let ax, ay, az;
@@ -1269,6 +1277,13 @@ testButton.addEventListener("click", async () => {
 });
 
 window.addEventListener("resize", resizeCanvas);
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") tryResumeAudio();
+});
+window.addEventListener("pageshow", tryResumeAudio);
+window.addEventListener("focus", tryResumeAudio);
+window.addEventListener("pointerdown", tryResumeAudio, { passive: true });
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.getRegistrations().then((regs) => {
